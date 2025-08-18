@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Login() {
   const router = useRouter();
@@ -24,7 +23,7 @@ export default function Login() {
       const data = await res.json();
       if (res.ok) {
         setMessage("✅ Login successful! Redirecting...");
-        setTimeout(() => router.push("/"), 1500);
+        setTimeout(() => router.push("/dashboard"), 1500);
       } else {
         setMessage(`❌ ${data.message}`);
       }
@@ -40,8 +39,11 @@ export default function Login() {
         {message && <div className="alert alert-info text-center">{message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label fw-bold">Email</label>
+            <label className="form-label fw-bold" htmlFor="email">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
               name="email"
               className="form-control"
@@ -53,8 +55,11 @@ export default function Login() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Password</label>
+            <label className="form-label fw-bold" htmlFor="password">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
               name="password"
               className="form-control"

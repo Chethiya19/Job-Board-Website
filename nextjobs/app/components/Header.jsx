@@ -1,14 +1,24 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const dropdownRef = useRef();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
+
+    // Close dropdown if clicked outside
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -17,14 +27,13 @@ export default function Header() {
     window.location.href = "/login";
   };
 
-  // CSS-in-JS styles
   const styles = {
     navbar: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
       padding: "0.75rem 1.5rem",
-      background: "#2c7bd4ff",
+      background: "#2c7bd4",
       color: "#fff",
       boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
       position: "sticky",
@@ -48,20 +57,32 @@ export default function Header() {
       fontWeight: "500",
       cursor: "pointer",
     },
-    toggleButton: {
-      display: "none",
-      background: "none",
-      border: "none",
-      fontSize: "1.5rem",
-      color: "#fff",
-      cursor: "pointer",
-    },
-    dropdown: {
+    userWrapper: {
+      display: "flex",
+      alignItems: "center",
       position: "relative",
+      cursor: "pointer",
+      gap: "0.5rem",
+    },
+    userIcon: {
+      width: "35px",
+      height: "35px",
+      borderRadius: "50%",
+      background: "#fff",
+      color: "#2c7bd4",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: "700",
+      fontSize: "1rem",
+    },
+    userName: {
+      color: "#fff",
+      fontWeight: "500",
     },
     dropdownMenu: {
       position: "absolute",
-      top: "100%",
+      top: "120%",
       right: 0,
       background: "#fff",
       color: "#333",
@@ -70,6 +91,7 @@ export default function Header() {
       padding: "0.5rem 0",
       minWidth: "150px",
       display: menuOpen ? "block" : "none",
+      zIndex: 1000,
     },
     dropdownItem: {
       padding: "0.5rem 1rem",
@@ -86,52 +108,49 @@ export default function Header() {
         Next Jobs
       </Link>
 
-      {/* Toggle button for mobile */}
-      <button
-        style={styles.toggleButton}
-        className="mobile-toggle"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        ☰
-      </button>
-
       <div style={styles.navLinks}>
         <Link href="/" style={styles.link}>
           Home
         </Link>
+        <Link href="/jobs" style={styles.link}>
+          Jobs
+        </Link>
+        <Link href="/companies" style={styles.link}>
+          Companies
+        </Link>
 
-        {!user && (
-          <>
-            <Link href="/login" style={styles.link}>
-              Login
-            </Link>
-            <Link href="/register" style={styles.link}>
-              Register
-            </Link>
-          </>
-        )}
-
-        {user && (
-          <div style={styles.dropdown}>
-            <span
-              style={styles.link}
-              onClick={() => setMenuOpen((prev) => !prev)}
-            >
-              {user.name} ▼
-            </span>
-            <div style={styles.dropdownMenu}>
-              <Link href="/profile" style={styles.dropdownItem}>
-                Profile
-              </Link>
-              <span
-                style={styles.dropdownItem}
-                onClick={handleLogout}
-              >
-                Logout
-              </span>
-            </div>
+        <div
+          ref={dropdownRef}
+          style={styles.userWrapper}
+          onClick={() => setMenuOpen((prev) => !prev)}
+        >
+          <div style={styles.userIcon}>
+            {user ? user.name.charAt(0).toUpperCase() : "👤"}
           </div>
-        )}
+          {user && <span style={styles.userName}>{user.name}</span>}
+
+          <div style={styles.dropdownMenu}>
+            {!user ? (
+              <>
+                <Link href="/login" style={styles.dropdownItem}>
+                  Login
+                </Link>
+                <Link href="/register" style={styles.dropdownItem}>
+                  Register
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/profile" style={styles.dropdownItem}>
+                  Profile
+                </Link>
+                <span style={styles.dropdownItem} onClick={handleLogout}>
+                  Logout
+                </span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   );
