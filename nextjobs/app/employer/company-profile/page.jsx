@@ -1,22 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function PersonalDetails() {
+export default function CompanyProfile() {
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    phone: "",
+    companyName: "",
     email: "", // display only
+    phone: "",
+    website: "",
+    address: "",
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Fetch candidate + user details on mount
+  // Fetch employer + user details on mount
   useEffect(() => {
-    const fetchCandidate = async () => {
+    const fetchEmployer = async () => {
       try {
-        const res = await fetch("/api/candidate/get-personal-details", {
+        const res = await fetch("/api/employer/get-company-profile", {
           method: "GET",
           credentials: "include",
         });
@@ -24,15 +24,14 @@ export default function PersonalDetails() {
         const data = await res.json();
 
         if (!res.ok) {
-          setMessage(data.message || "Failed to fetch details");
-        } else if (data.candidate) {
-          // Prefill form with fetched data
+          setMessage(data.message || "Failed to fetch company profile");
+        } else if (data.company) {
           setForm({
-            firstName: data.candidate.firstName || "",
-            lastName: data.candidate.lastName || "",
-            address: data.candidate.address || "",
-            phone: data.candidate.phone || "",
-            email: data.user?.email || "", // from populated User model
+            companyName: data.company.companyName || "",
+            email: data.email || "",
+            phone: data.company.phone || "",
+            website: data.company.website || "",
+            address: data.company.address || "",
           });
         }
       } catch (err) {
@@ -43,7 +42,7 @@ export default function PersonalDetails() {
       }
     };
 
-    fetchCandidate();
+    fetchEmployer();
   }, []);
 
   const handleChange = (e) => {
@@ -55,27 +54,27 @@ export default function PersonalDetails() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/candidate/personal-details", {
+      const res = await fetch("/api/employer/company-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          address: form.address,
+          companyName: form.companyName,
           phone: form.phone,
+          website: form.website,
+          address: form.address,
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        setMessage("✅ Personal details updated successfully!");
+        setMessage("✅ Company profile updated successfully!");
       } else {
         setMessage(`❌ ${data.message}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to update details");
+      setMessage("❌ Failed to update profile");
     }
   };
 
@@ -84,7 +83,7 @@ export default function PersonalDetails() {
 
   return (
     <div className="p-8 bg-white rounded shadow max-w-4xl mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-6">Personal Details</h2>
+      <h2 className="text-2xl font-semibold mb-6">Company Profile</h2>
 
       {message && (
         <p
@@ -97,47 +96,19 @@ export default function PersonalDetails() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Row 1: First Name / Last Name */}
+        {/* Row 1: Company Name / Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium mb-1">First Name</label>
+            <label className="block font-medium mb-1">Company Name</label>
             <input
               type="text"
-              name="firstName"
-              value={form.firstName}
+              name="companyName"
+              value={form.companyName}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
               required
             />
           </div>
-          <div>
-            <label className="block font-medium mb-1">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Row 2: Address */}
-        <div>
-          <label className="block font-medium mb-1">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        {/* Row 3: Email (disabled) / Phone */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Email</label>
             <input
@@ -148,8 +119,12 @@ export default function PersonalDetails() {
               disabled
             />
           </div>
+        </div>
+
+        {/* Row 2: Phone / Website */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium mb-1">Phone Number</label>
+            <label className="block font-medium mb-1">Phone</label>
             <input
               type="text"
               name="phone"
@@ -159,13 +134,36 @@ export default function PersonalDetails() {
               placeholder="Optional"
             />
           </div>
+          <div>
+            <label className="block font-medium mb-1">Website</label>
+            <input
+              type="text"
+              name="website"
+              value={form.website}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              placeholder="Optional"
+            />
+          </div>
+        </div>
+
+        {/* Row 3: Address */}
+        <div>
+          <label className="block font-medium mb-1">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          />
         </div>
 
         <button
           type="submit"
           className="w bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition"
         >
-          Update Details
+          Update Profile
         </button>
       </form>
     </div>

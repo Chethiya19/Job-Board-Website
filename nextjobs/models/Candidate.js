@@ -46,7 +46,7 @@ const CandidateSchema = new mongoose.Schema(
       },
     ],
     resume: {
-      type: String, // URL or file path
+      type: String,
       default: "",
     },
     appliedJobs: [
