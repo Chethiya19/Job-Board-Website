@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef();
+  const router = useRouter();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -24,7 +26,16 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
-    window.location.href = "/login";
+    router.push("/login");
+  };
+
+  const handleProfileClick = () => {
+    if (!user) return;
+    if (user.role === "Candidate") {
+      router.push("/candidate/dashboard");
+    } else if (user.role === "Employer") {
+      router.push("/employer/dashboard");
+    }
   };
 
   const styles = {
@@ -33,7 +44,7 @@ export default function Header() {
       justifyContent: "space-between",
       alignItems: "center",
       padding: "0.75rem 1.5rem",
-      background: "#2c7bd4",
+      background: "#1d4ed8",
       color: "#fff",
       boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
       position: "sticky",
@@ -104,49 +115,27 @@ export default function Header() {
 
   return (
     <nav style={styles.navbar}>
-      <Link href="/" style={styles.brand}>
-        Next Jobs
-      </Link>
+      <Link href="/" style={styles.brand}>Next Jobs</Link>
 
       <div style={styles.navLinks}>
-        <Link href="/" style={styles.link}>
-          Home
-        </Link>
-        <Link href="/jobs" style={styles.link}>
-          Jobs
-        </Link>
-        <Link href="/companies" style={styles.link}>
-          Companies
-        </Link>
+        <Link href="/" style={styles.link}>Home</Link>
+        <Link href="/jobs" style={styles.link}>Jobs</Link>
+        <Link href="/companies" style={styles.link}>Companies</Link>
 
-        <div
-          ref={dropdownRef}
-          style={styles.userWrapper}
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
-          <div style={styles.userIcon}>
-            {user ? user.name.charAt(0).toUpperCase() : "👤"}
-          </div>
+        <div ref={dropdownRef} style={styles.userWrapper} onClick={() => setMenuOpen((prev) => !prev)}>
+          <div style={styles.userIcon}>{user ? user.name.charAt(0).toUpperCase() : "👤"}</div>
           {user && <span style={styles.userName}>{user.name}</span>}
 
           <div style={styles.dropdownMenu}>
             {!user ? (
               <>
-                <Link href="/login" style={styles.dropdownItem}>
-                  Login
-                </Link>
-                <Link href="/register" style={styles.dropdownItem}>
-                  Register
-                </Link>
+                <Link href="/login" style={styles.dropdownItem}>Login</Link>
+                <Link href="/register" style={styles.dropdownItem}>Register</Link>
               </>
             ) : (
               <>
-                <Link href="/profile" style={styles.dropdownItem}>
-                  Profile
-                </Link>
-                <span style={styles.dropdownItem} onClick={handleLogout}>
-                  Logout
-                </span>
+                <span style={styles.dropdownItem} onClick={handleProfileClick}>Profile</span>
+                <span style={styles.dropdownItem} onClick={handleLogout}>Logout</span>
               </>
             )}
           </div>

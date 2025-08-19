@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   await dbConnect();
 
   try {
-    const user = await User.findById(decoded.id).select("name email role");
+    const user = await User.findById(decoded.id).select("username email role");
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({ user });

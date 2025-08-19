@@ -1,10 +1,9 @@
 "use client";
 
 export default function Footer() {
-  // CSS-in-JS styles
   const styles = {
     footer: {
-      background: "#11529cff",
+      background: "#1d4ed8",
       color: "#fff",
       padding: "1.5rem 1rem",
       marginTop: "auto",

@@ -7,7 +7,8 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +23,16 @@ export default function Login() {
 
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem("user", JSON.stringify(data.user)); // store user role
         setMessage("✅ Login successful! Redirecting...");
-        setTimeout(() => router.push("/dashboard"), 1500);
+
+        setTimeout(() => {
+          if (data.user.role === "Candidate") {
+            router.push("/candidate/dashboard");
+          } else if (data.user.role === "Employer") {
+            router.push("/employer/dashboard");
+          }
+        }, 1500);
       } else {
         setMessage(`❌ ${data.message}`);
       }
@@ -39,9 +48,7 @@ export default function Login() {
         {message && <div className="alert alert-info text-center">{message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label fw-bold" htmlFor="email">
-              Email
-            </label>
+            <label className="form-label fw-bold" htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
@@ -55,9 +62,7 @@ export default function Login() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-bold" htmlFor="password">
-              Password
-            </label>
+            <label className="form-label fw-bold" htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
@@ -70,9 +75,7 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Login
-          </button>
+          <button type="submit" className="btn btn-primary w-100">Login</button>
         </form>
 
         <p className="text-center mt-3">

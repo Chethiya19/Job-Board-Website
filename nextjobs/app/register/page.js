@@ -38,16 +38,16 @@ export default function Register() {
         {message && <div className="alert alert-info text-center py-2">{message}</div>}
 
         <form onSubmit={handleSubmit}>
-          {/* Name */}
+          {/* Username */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Full Name</label>
+            <label className="form-label fw-semibold">Userame</label>
             <input
               type="text"
               className="form-control rounded-3"
-              name="name"
-              value={form.name}
+              name="username"
+              value={form.username}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              placeholder="Enter your username"
               required
             />
           </div>
