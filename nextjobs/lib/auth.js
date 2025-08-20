@@ -3,6 +3,11 @@ import cookie from "cookie";
 
 const SECRET = process.env.JWT_SECRET || "mysecret";
 
+/**
+ * Verifies the JWT token from cookies in the request.
+ * @param {import('next').NextApiRequest} req
+ * @returns {object|null} Decoded token payload or null if invalid
+ */
 export function verifyToken(req) {
   const cookies = req.headers.cookie;
   if (!cookies) return null;
@@ -11,8 +16,9 @@ export function verifyToken(req) {
   if (!token) return null;
 
   try {
-    return jwt.verify(token, SECRET);
-  } catch {
+    const decoded = jwt.verify(token, SECRET);
+    return decoded; // { id: ..., email: ... } depending on how you signed it
+  } catch (err) {
     return null;
   }
 }

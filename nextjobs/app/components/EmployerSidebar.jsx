@@ -8,12 +8,12 @@ export default function EmployerSidebar() {
   const [loading, setLoading] = useState(false);
 
   const menuItems = [
-    { name: "Dashboard", path: "/employer/dashboard" },
-    { name: "Company Profile", path: "/employer/company-profile" },
-    { name: "Post Jobs", path: "/employer/post-jobs" },
-    { name: "Manage Jobs", path: "/employer/manage-jobs" },
-    { name: "Applications", path: "/employer/applications" },
-    { name: "Shortlisted", path: "/employer/shortlisted" },
+    { name: "Dashboard", paths: ["/employer/dashboard"] },
+    { name: "Company Profile", paths: ["/employer/company-profile"] },
+    { name: "Post Jobs", paths: ["/employer/job-list", "/employer/post-job"] },
+    { name: "Manage Jobs", paths: ["/employer/manage-jobs"] },
+    { name: "Applications", paths: ["/employer/applications"] },
+    { name: "Shortlisted", paths: ["/employer/shortlisted"] },
   ];
 
   const handleNavigation = (path) => {
@@ -48,26 +48,28 @@ export default function EmployerSidebar() {
       </div>
       <nav style={{ flex: 1, padding: "1rem" }}>
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {menuItems.map((item) => (
-            <li
-              key={item.path}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "0.5rem",
-                fontWeight: 500,
-                cursor: "pointer",
-                backgroundColor: pathname === item.path ? "#3b82f6" : "transparent",
-              }}
-              onClick={() => handleNavigation(item.path)}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  pathname === item.path ? "#3b82f6" : "transparent")
-              }
-            >
-              {item.name}
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = item.paths.some((p) => pathname === p);
+            return (
+              <li
+                key={item.name}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  backgroundColor: isActive ? "#3b82f6" : "transparent",
+                }}
+                onClick={() => handleNavigation(item.paths[0])} // Navigate to first path
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = isActive ? "#3b82f6" : "transparent")
+                }
+              >
+                {item.name}
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <button

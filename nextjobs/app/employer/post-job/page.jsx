@@ -37,28 +37,34 @@ const categories = [
   "Imports / Exports",
 ];
 
-export default function PostJobs() {
+export default function PostJobsForm() {
   const router = useRouter();
   const [form, setForm] = useState({
     title: "",
     description: "",
     location: "",
     salary: "",
-    type: "Full-time",
-    category: categories[0],
+    type: "",        // <-- empty for placeholder
+    category: "",    // <-- empty for placeholder
     requirements: "",
   });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    if (!form.title || !form.description || !form.location || !form.type || !form.category) {
+    // Validation
+    if (
+      !form.title ||
+      !form.description ||
+      !form.location ||
+      !form.type ||
+      !form.category
+    ) {
       setMessage("❌ Please fill all required fields");
       return;
     }
@@ -73,14 +79,13 @@ export default function PostJobs() {
           description: "",
           location: "",
           salary: "",
-          type: "Full-time",
-          category: categories[0],
+          type: "",
+          category: "",
           requirements: "",
         });
-        setTimeout(() => router.push("/employer/dashboard"), 1500);
+        router.push("/employer/job-list");
       }
     } catch (error) {
-      console.error(error);
       setMessage(
         error.response?.data?.message || "❌ Something went wrong. Please try again."
       );
@@ -88,17 +93,21 @@ export default function PostJobs() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Post a Job</h2>
+
       {message && (
         <p
           className={`mb-4 text-center p-2 rounded ${
-            message.startsWith("✅") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            message.startsWith("✅")
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
           }`}
         >
           {message}
         </p>
       )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -131,29 +140,40 @@ export default function PostJobs() {
           onChange={handleChange}
           className="w-full border rounded px-3 py-2"
         />
+
+        {/* Job Type Dropdown */}
         <select
           name="type"
           value={form.type}
           onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 bg-white"
         >
-          <option>Full-time</option>
-          <option>Part-time</option>
-          <option>Internship</option>
-          <option>Contract</option>
+          <option value="" disabled>
+            Select Job Type *
+          </option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Internship">Internship</option>
+          <option value="Contract">Contract</option>
         </select>
+
+        {/* Job Category Dropdown */}
         <select
           name="category"
           value={form.category}
           onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 bg-white"
         >
+          <option value="" disabled>
+            Select Job Category *
+          </option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
             </option>
           ))}
         </select>
+
         <textarea
           name="requirements"
           placeholder="Requirements (Optional)"
@@ -161,6 +181,7 @@ export default function PostJobs() {
           onChange={handleChange}
           className="w-full border rounded px-3 py-2"
         />
+
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"

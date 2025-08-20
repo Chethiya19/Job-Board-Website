@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const JobSchema = new mongoose.Schema(
   {
-    employerId: { type: mongoose.Schema.Types.ObjectId, ref: "Employer", required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
     location: { type: String, required: true },
-    type: { 
-      type: String, 
-      enum: ["Full-time", "Part-time", "Internship", "Contract"], 
-      required: true 
+    type: {
+      type: String,
+      enum: ["Full-time", "Part-time", "Internship", "Contract"],
+      required: true
     },
     category: {
       type: String,
@@ -50,7 +50,6 @@ const JobSchema = new mongoose.Schema(
     salary: { type: Number },
     description: { type: String, required: true },
     requirements: { type: String },
-    postedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

@@ -3,22 +3,20 @@ import Job from "@/models/Job";
 import { verifyToken } from "@/lib/auth";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
-
   await dbConnect();
 
-  const { valid, decoded, message: tokenMessage } = verifyToken(req);
-  if (!valid) return res.status(401).json({ message: tokenMessage });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
+  const user = verifyToken(req);
+  if (!user) return res.status(401).json({ message: "Unauthorized" });
 
   const { title, description, location, salary, type, category, requirements } = req.body;
 
-  if (!title || !description || !location || !type || !category) {
-    return res.status(400).json({ message: "❌ Please fill all required fields" });
-  }
-
   try {
-    const newJob = await Job.create({
-      employerId: decoded.id,
+    const job = new Job({
+      userId: user.id, // from decoded token
       title,
       description,
       location,
@@ -27,9 +25,11 @@ export default async function handler(req, res) {
       category,
       requirements,
     });
-    return res.status(201).json({ message: "✅ Job posted successfully", job: newJob });
-  } catch (error) {
-    console.error("Error posting job:", error);
-    return res.status(500).json({ message: "Server error" });
+
+    await job.save();
+    res.status(201).json({ message: "✅ Job posted successfully", job });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 }
