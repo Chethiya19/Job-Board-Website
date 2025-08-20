@@ -41,7 +41,7 @@ export default function DashboardContent() {
   return (
     <div className="p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold text-indigo-700 mb-4">
-        Welcome, {user?.name}!
+        Welcome, {user?.username}!
       </h2>
       <p><strong>Email:</strong> {user?.email}</p>
       <p><strong>Role:</strong> <span className="text-green-600 font-semibold">{user?.role}</span></p>

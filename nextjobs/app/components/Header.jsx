@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const dropdownRef = useRef();
   const router = useRouter();
 
@@ -23,10 +24,23 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (res.ok) {
+        localStorage.removeItem("user");
+        setUser(null);
+        router.push("/login");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
   };
 
   const handleProfileClick = () => {
@@ -37,6 +51,16 @@ export default function Header() {
       router.push("/employer/dashboard");
     }
   };
+
+  const dropdownItems = !user
+    ? [
+        { label: "Login", href: "/login" },
+        { label: "Register", href: "/register" },
+      ]
+    : [
+        { label: "Profile", onClick: handleProfileClick },
+        { label: "Logout", onClick: handleLogout },
+      ];
 
   const styles = {
     navbar: {
@@ -110,6 +134,7 @@ export default function Header() {
       color: "#333",
       textDecoration: "none",
       display: "block",
+      transition: "background 0.2s, color 0.2s",
     },
   };
 
@@ -122,21 +147,44 @@ export default function Header() {
         <Link href="/jobs" style={styles.link}>Jobs</Link>
         <Link href="/companies" style={styles.link}>Companies</Link>
 
-        <div ref={dropdownRef} style={styles.userWrapper} onClick={() => setMenuOpen((prev) => !prev)}>
+        <div
+          ref={dropdownRef}
+          style={styles.userWrapper}
+          onClick={() => setMenuOpen((prev) => !prev)}
+        >
           <div style={styles.userIcon}>{user ? user.name.charAt(0).toUpperCase() : "👤"}</div>
+          <span style={styles.arrow}>▼</span>
           {user && <span style={styles.userName}>{user.name}</span>}
 
           <div style={styles.dropdownMenu}>
-            {!user ? (
-              <>
-                <Link href="/login" style={styles.dropdownItem}>Login</Link>
-                <Link href="/register" style={styles.dropdownItem}>Register</Link>
-              </>
-            ) : (
-              <>
-                <span style={styles.dropdownItem} onClick={handleProfileClick}>Profile</span>
-                <span style={styles.dropdownItem} onClick={handleLogout}>Logout</span>
-              </>
+            {dropdownItems.map((item, index) =>
+              item.href ? (
+                <Link
+                  key={index}
+                  href={item.href}
+                  style={{
+                    ...styles.dropdownItem,
+                    backgroundColor: hoveredIndex === index ? "#f0f0f0" : "transparent",
+                  }}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span
+                  key={index}
+                  style={{
+                    ...styles.dropdownItem,
+                    backgroundColor: hoveredIndex === index ? "#f0f0f0" : "transparent",
+                  }}
+                  onClick={item.onClick}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  {item.label}
+                </span>
+              )
             )}
           </div>
         </div>

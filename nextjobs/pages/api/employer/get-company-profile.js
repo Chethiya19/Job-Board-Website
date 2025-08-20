@@ -17,14 +17,25 @@ export default async function handler(req, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
 
-    const company = await Employer.findOne({ userId });
-    if (!company) return res.status(404).json({ message: "Company profile not found" });
+    // Fetch employer/company info
+    let company = await Employer.findOne({ userId });
 
-    const user = await User.findById(userId);
+    // If company not found, return empty object instead of 404
+    if (!company) {
+      company = {
+        companyName: "",
+        phone: "",
+        website: "",
+        address: "",
+      };
+    }
 
-    res.status(200).json({ 
-      company, 
-      email: user?.email || ""  // fetch email from User table
+    // Fetch user email
+    const user = await User.findById(userId).select("email");
+
+    res.status(200).json({
+      company,
+      email: user?.email || "",
     });
   } catch (err) {
     console.error(err);

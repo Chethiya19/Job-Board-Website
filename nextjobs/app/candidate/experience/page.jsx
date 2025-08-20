@@ -55,11 +55,11 @@ export default function Experience() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-2 gap-6 p-8">
       {/* Left: Add New Experience */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">➕ Add New Experience</h2>
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
             name="company"
@@ -78,7 +78,7 @@ export default function Experience() {
             className="w-full border px-3 py-2 rounded"
             required
           />
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <input
               type="date"
               name="startDate"

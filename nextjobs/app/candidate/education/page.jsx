@@ -44,6 +44,13 @@ export default function Education() {
 
   const handleAdd = async () => {
     setMessage("");
+
+    // Frontend validation
+    if (!newEdu.school || !newEdu.degree || !newEdu.field || !newEdu.startYear || !newEdu.endYear) {
+      setMessage("❌ Please fill in all fields before adding.");
+      return;
+    }
+
     try {
       const res = await fetch("/api/candidate/education", {
         method: "POST",
@@ -69,19 +76,13 @@ export default function Education() {
   if (loading) return <p className="text-gray-500 mt-10 text-center">Loading...</p>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">🎓 Education</h2>
+    <div className="p-1 max-w-4xl mx-auto">
+      {/* <h2 className="text-2xl font-semibold mb-6">🎓 Education</h2> */}
 
-      {message && (
-        <p className={`mb-4 text-center ${message.startsWith("✅") ? "text-green-700" : "text-red-700"}`}>
-          {message}
-        </p>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left: Add New Education */}
         <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-4">Add New Education</h3>
+          <h3 className="text-xl font-semibold mb-4">🎓 Add New Education</h3>
           <input
             type="text"
             name="school"
@@ -89,6 +90,7 @@ export default function Education() {
             onChange={handleChange}
             placeholder="School"
             className="w-full border px-3 py-2 rounded mb-3"
+            required
           />
           <input
             type="text"
@@ -97,6 +99,7 @@ export default function Education() {
             onChange={handleChange}
             placeholder="Degree"
             className="w-full border px-3 py-2 rounded mb-3"
+            required
           />
           <input
             type="text"
@@ -105,6 +108,7 @@ export default function Education() {
             onChange={handleChange}
             placeholder="Field of Study"
             className="w-full border px-3 py-2 rounded mb-3"
+            required
           />
           <div className="grid grid-cols-2 gap-4 mb-3">
             <input
@@ -114,6 +118,7 @@ export default function Education() {
               onChange={handleChange}
               placeholder="Start Year"
               className="w-full border px-3 py-2 rounded"
+              required
             />
             <input
               type="number"
@@ -122,6 +127,7 @@ export default function Education() {
               onChange={handleChange}
               placeholder="End Year"
               className="w-full border px-3 py-2 rounded"
+              required
             />
           </div>
           <button
@@ -131,11 +137,17 @@ export default function Education() {
           >
             Add Education
           </button>
+
+          {message && (
+            <p className={`mb-4 text-center pt-[20px] ${message.startsWith("✅") ? "text-green-700" : "text-red-700"}`}>
+              {message}
+            </p>
+          )}
         </div>
 
         {/* Right: Existing Education List */}
-        <div className="bg-white p-6 rounded shadow max-h-[350px] overflow-y-auto">
-          <h3 className="text-xl font-semibold mb-4">Existing Education</h3>
+        <div className="bg-white p-6 rounded shadow max-h-[450px] overflow-y-auto">
+          <h3 className="text-xl font-semibold mb-4">🎓 Existing Education</h3>
           {educationList.length > 0 ? (
             educationList.map((edu, index) => (
               <div key={index} className="border p-4 rounded mb-3">

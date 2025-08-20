@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 export default function CompanyProfile() {
   const [form, setForm] = useState({
     companyName: "",
-    email: "", // display only
+    email: "", // read-only
     phone: "",
     website: "",
     address: "",
@@ -12,28 +12,40 @@ export default function CompanyProfile() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Fetch employer + user details on mount
   useEffect(() => {
-    const fetchEmployer = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/employer/get-company-profile", {
+        // 1️⃣ Fetch employer/company info
+        const companyRes = await fetch("/api/employer/get-company-profile", {
           method: "GET",
           credentials: "include",
         });
+        const companyData = await companyRes.json();
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          setMessage(data.message || "Failed to fetch company profile");
-        } else if (data.company) {
-          setForm({
-            companyName: data.company.companyName || "",
-            email: data.email || "",
-            phone: data.company.phone || "",
-            website: data.company.website || "",
-            address: data.company.address || "",
-          });
+        if (!companyRes.ok) {
+          setMessage(companyData.message || "Failed to fetch company profile");
+          return;
         }
+
+        // 2️⃣ Fetch email from /api/auth/me
+        const userRes = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) {
+          setMessage(userData.message || "Failed to fetch user data");
+          return;
+        }
+
+        setForm({
+          companyName: companyData.company?.companyName || "",
+          email: userData.user?.email || "", // email from User table
+          phone: companyData.company?.phone || "",
+          website: companyData.company?.website || "",
+          address: companyData.company?.address || "",
+        });
       } catch (err) {
         console.error(err);
         setMessage("Server error");
@@ -42,7 +54,7 @@ export default function CompanyProfile() {
       }
     };
 
-    fetchEmployer();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -68,18 +80,17 @@ export default function CompanyProfile() {
 
       const data = await res.json();
       if (res.ok) {
-        setMessage("✅ Company profile updated successfully!");
+        setMessage("✅ Company profile saved successfully!");
       } else {
         setMessage(`❌ ${data.message}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to update profile");
+      setMessage("❌ Failed to save company profile");
     }
   };
 
-  if (loading)
-    return <p className="text-gray-500 mt-10 text-center">Loading...</p>;
+  if (loading) return <p className="text-gray-500 mt-10 text-center">Loading...</p>;
 
   return (
     <div className="p-8 bg-white rounded shadow max-w-4xl mx-auto mt-8">
@@ -96,7 +107,6 @@ export default function CompanyProfile() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Row 1: Company Name / Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Company Name</label>
@@ -114,14 +124,13 @@ export default function CompanyProfile() {
             <input
               type="email"
               name="email"
-              value={form.email}
+              value={form.email} // email from User table
               className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
               disabled
             />
           </div>
         </div>
 
-        {/* Row 2: Phone / Website */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Phone</label>
@@ -147,7 +156,6 @@ export default function CompanyProfile() {
           </div>
         </div>
 
-        {/* Row 3: Address */}
         <div>
           <label className="block font-medium mb-1">Address</label>
           <input
@@ -161,9 +169,9 @@ export default function CompanyProfile() {
 
         <button
           type="submit"
-          className="w bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition"
         >
-          Update Profile
+          Save Profile
         </button>
       </form>
     </div>

@@ -4,8 +4,9 @@ const CandidateSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // foreign key reference
+      ref: "User",
       required: true,
+      unique: true,
     },
     firstName: {
       type: String,

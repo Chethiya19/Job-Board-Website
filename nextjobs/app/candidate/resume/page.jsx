@@ -58,7 +58,8 @@ export default function ResumeUpload() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow w-full max-w-lg">
+    <div className="p-1 max-w-4xl mx-4">
+    <div className="bg-white m-1 p-4 rounded-lg shadow w-full max-w-lg">
       <h2 className="text-xl font-semibold mb-4">Upload Resume</h2>
 
       {currentResume && (
@@ -84,6 +85,7 @@ export default function ResumeUpload() {
       </form>
 
       {message && <p className="mt-3 text-sm">{message}</p>}
+    </div>
     </div>
   );
 }

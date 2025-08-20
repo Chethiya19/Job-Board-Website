@@ -1,8 +1,11 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function CandidateSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const menuItems = [
     { name: "Dashboard", path: "/candidate/dashboard" },
@@ -14,7 +17,28 @@ export default function CandidateSidebar() {
   ];
 
   const handleNavigation = (path) => {
-    window.location.href = path;
+    router.push(path);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (res.ok) {
+        localStorage.removeItem("user");
+        router.push("/login");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Error logging out:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // CSS as JS objects
@@ -52,9 +76,6 @@ export default function CandidateSidebar() {
     activeLi: {
       backgroundColor: "#3b82f6", // blue-500
     },
-    liHover: {
-      backgroundColor: "#2563eb", // blue-600
-    },
     logoutBtn: {
       margin: "1rem",
       padding: "0.5rem 1rem",
@@ -65,9 +86,6 @@ export default function CandidateSidebar() {
       borderRadius: "0.5rem",
       cursor: "pointer",
       transition: "background-color 0.2s",
-    },
-    logoutBtnHover: {
-      backgroundColor: "#dc2626", // red-600
     },
   };
 
@@ -84,7 +102,9 @@ export default function CandidateSidebar() {
                 ...(pathname === item.path ? styles.activeLi : {}),
               }}
               onClick={() => handleNavigation(item.path)}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#2563eb")
+              }
               onMouseLeave={(e) =>
                 (e.currentTarget.style.backgroundColor =
                   pathname === item.path ? "#3b82f6" : "transparent")
@@ -97,11 +117,16 @@ export default function CandidateSidebar() {
       </nav>
       <button
         style={styles.logoutBtn}
-        onClick={() => handleNavigation("/login")}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#dc2626")}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ef4444")}
+        onClick={handleLogout}
+        disabled={loading}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = "#dc2626")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "#ef4444")
+        }
       >
-        Logout
+        {loading ? "Logging out..." : "Logout"}
       </button>
     </div>
   );

@@ -39,7 +39,7 @@ export default function DashboardContent() {
   if (error) return <p className="text-center mt-10 text-red-600 font-semibold">{error}</p>;
 
   return (
-    <div className="p-3 bg-white rounded shadow">
+    <div className="mx-4 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold text-indigo-700 mb-4">
         Welcome, {user?.username}!
       </h2>

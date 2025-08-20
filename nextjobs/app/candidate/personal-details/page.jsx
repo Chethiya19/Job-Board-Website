@@ -12,29 +12,41 @@ export default function PersonalDetails() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Fetch candidate + user details on mount
   useEffect(() => {
-    const fetchCandidate = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/candidate/get-personal-details", {
+        // 1️⃣ Fetch candidate info
+        const candidateRes = await fetch("/api/candidate/get-personal-details", {
           method: "GET",
           credentials: "include",
         });
+        const candidateData = await candidateRes.json();
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          setMessage(data.message || "Failed to fetch details");
-        } else if (data.candidate) {
-          // Prefill form with fetched data
-          setForm({
-            firstName: data.candidate.firstName || "",
-            lastName: data.candidate.lastName || "",
-            address: data.candidate.address || "",
-            phone: data.candidate.phone || "",
-            email: data.user?.email || "", // from populated User model
-          });
+        if (!candidateRes.ok) {
+          setMessage(candidateData.message || "Failed to fetch candidate details");
+          return;
         }
+
+        // 2️⃣ Fetch email from /api/auth/me
+        const userRes = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) {
+          setMessage(userData.message || "Failed to fetch user email");
+          return;
+        }
+
+        // Prefill form
+        setForm({
+          firstName: candidateData.candidate?.firstName || "",
+          lastName: candidateData.candidate?.lastName || "",
+          address: candidateData.candidate?.address || "",
+          phone: candidateData.candidate?.phone || "",
+          email: userData.user?.email || "", // email from User table
+        });
       } catch (err) {
         console.error(err);
         setMessage("Server error");
@@ -43,7 +55,7 @@ export default function PersonalDetails() {
       }
     };
 
-    fetchCandidate();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -97,7 +109,6 @@ export default function PersonalDetails() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Row 1: First Name / Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">First Name</label>
@@ -123,7 +134,6 @@ export default function PersonalDetails() {
           </div>
         </div>
 
-        {/* Row 2: Address */}
         <div>
           <label className="block font-medium mb-1">Address</label>
           <input
@@ -136,7 +146,6 @@ export default function PersonalDetails() {
           />
         </div>
 
-        {/* Row 3: Email (disabled) / Phone */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Email</label>
@@ -163,7 +172,7 @@ export default function PersonalDetails() {
 
         <button
           type="submit"
-          className="w bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition"
         >
           Update Details
         </button>
