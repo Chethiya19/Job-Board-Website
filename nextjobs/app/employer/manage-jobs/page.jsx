@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import API from "@/lib/axios";
+import { ClockIcon } from "@heroicons/react/24/outline";
 
 export default function ManageJobs() {
   const router = useRouter();
@@ -37,6 +38,24 @@ export default function ManageJobs() {
     fetchJobs();
   }, []);
 
+  // Helper function to calculate time ago
+  const getTimeAgo = (createdAt) => {
+    const created = new Date(createdAt);
+    const now = new Date();
+    const diffMs = now - created;
+
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays >= 1) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    if (diffHours >= 1) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    if (diffMinutes >= 1) return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
+
+    return "Just now";
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6">Manage Jobs</h2>
@@ -54,8 +73,14 @@ export default function ManageJobs() {
           {jobs.map((job) => (
             <li
               key={job._id}
-              className="border p-4 rounded shadow-sm flex justify-between items-start"
+              className="relative border p-4 rounded shadow-sm flex justify-between items-start"
             >
+              {/* Posted time - top right */}
+              <div className="absolute top-3 right-3 flex items-center gap-1 text-gray-500 text-sm">
+                <ClockIcon className="w-4 h-4" />
+                <span>{getTimeAgo(job.createdAt)}</span>
+              </div>
+
               <div>
                 <h4 className="font-bold">{job.title}</h4>
                 <p className="text-gray-600">{job.description}</p>
