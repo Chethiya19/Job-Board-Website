@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import API from "@/lib/axios";
 
 const categories = [
@@ -37,8 +37,9 @@ const categories = [
   "Imports / Exports",
 ];
 
-export default function PostJobsForm() {
+export default function UpdateJob() {
   const router = useRouter();
+  const { id } = useParams(); // Get the job ID from URL
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -50,56 +51,61 @@ export default function PostJobsForm() {
   });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) =>
+  // Fetch job details
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchJob = async () => {
+      try {
+        const res = await API.get(`/employer/update-job/${id}`);
+        setForm({
+          title: res.data.job.title,
+          description: res.data.job.description,
+          location: res.data.job.location,
+          salary: res.data.job.salary || "",
+          type: res.data.job.type,
+          category: res.data.job.category,
+          requirements: res.data.job.requirements || "",
+        });
+      } catch (err) {
+        console.error(err);
+        setMessage("❌ Unable to fetch job details");
+      }
+    };
+
+    fetchJob();
+  }, [id]);
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-
-    if (
-      !form.title ||
-      !form.description ||
-      !form.location ||
-      !form.type ||
-      !form.category
-    ) {
+    if (!form.title || !form.description || !form.location || !form.type || !form.category) {
       setMessage("❌ Please fill all required fields");
       return;
     }
 
     try {
-      const res = await API.post("/employer/post-job", form);
-      setMessage(res.data.message);
-
-      if (res.status === 201) {
-        setForm({
-          title: "",
-          description: "",
-          location: "",
-          salary: "",
-          type: "",
-          category: "",
-          requirements: "",
-        });
-        router.push("/employer/job-list");
-      }
-    } catch (error) {
-      setMessage(
-        error.response?.data?.message || "❌ Something went wrong. Please try again."
-      );
+      await API.put(`/employer/update-job/${id}`, { id, ...form });
+      setMessage("✅ Job updated successfully!");
+      setTimeout(() => router.push("/employer/manage-jobs"), 2000);
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "❌ Something went wrong.");
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-4 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-2 text-center">Post a Job</h2>
+      <h2 className="text-2xl font-bold mb-2 text-center">Update Job</h2>
 
       {message && (
         <p
           className={`mb-4 text-center p-2 rounded ${message.startsWith("✅")
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
             }`}
         >
           {message}
@@ -123,7 +129,6 @@ export default function PostJobsForm() {
           className="w-full border rounded px-3 py-2 mb-3"
         />
 
-        {/* Location + Salary + Job Type in one row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
           <input
             type="text"
@@ -147,9 +152,7 @@ export default function PostJobsForm() {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2 bg-white"
           >
-            <option value="" disabled>
-              Select Job Type *
-            </option>
+            <option value="" disabled>Select Job Type *</option>
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
             <option value="Internship">Internship</option>
@@ -157,20 +160,15 @@ export default function PostJobsForm() {
           </select>
         </div>
 
-        {/* Job Category Dropdown */}
         <select
           name="category"
           value={form.category}
           onChange={handleChange}
           className="w-full border rounded px-3 py-2 mb-3 bg-white"
         >
-          <option value="" disabled>
-            Select Job Category *
-          </option>
+          <option value="" disabled>Select Job Category *</option>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
+            <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
 
@@ -186,7 +184,7 @@ export default function PostJobsForm() {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
-          Post Job
+          Update Job
         </button>
       </form>
     </div>

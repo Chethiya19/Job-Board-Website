@@ -11,7 +11,7 @@ export default function EmployerSidebar() {
     { name: "Dashboard", paths: ["/employer/dashboard"] },
     { name: "Company Profile", paths: ["/employer/company-profile"] },
     { name: "Post Jobs", paths: ["/employer/job-list", "/employer/post-job"] },
-    { name: "Manage Jobs", paths: ["/employer/manage-jobs"] },
+    { name: "Manage Jobs", paths: ["/employer/manage-jobs"], dynamicMatch: "/employer/update-job" },
     { name: "Applications", paths: ["/employer/applications"] },
     { name: "Shortlisted", paths: ["/employer/shortlisted"] },
   ];
@@ -49,22 +49,17 @@ export default function EmployerSidebar() {
       <nav style={{ flex: 1, padding: "1rem" }}>
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {menuItems.map((item) => {
-            const isActive = item.paths.some((p) => pathname === p);
+            const isActive =
+              item.paths.some((p) => pathname === p) ||
+              (item.dynamicMatch && pathname.startsWith(item.dynamicMatch));
+
             return (
               <li
                 key={item.name}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "0.5rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  backgroundColor: isActive ? "#3b82f6" : "transparent",
-                }}
-                onClick={() => handleNavigation(item.paths[0])} // Navigate to first path
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = isActive ? "#3b82f6" : "transparent")
-                }
+                className={`px-4 py-2 rounded font-medium cursor-pointer ${
+                  isActive ? "bg-blue-500" : "hover:bg-blue-600"
+                }`}
+                onClick={() => handleNavigation(item.paths[0])}
               >
                 {item.name}
               </li>

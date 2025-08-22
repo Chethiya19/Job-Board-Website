@@ -93,8 +93,8 @@ export default function CompanyProfile() {
   if (loading) return <p className="text-gray-500 mt-10 text-center">Loading...</p>;
 
   return (
-    <div className="p-8 bg-white rounded shadow max-w-4xl mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-6">Company Profile</h2>
+    <div className="p-8 bg-white rounded shadow max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-4">Company Profile</h2>
 
       {message && (
         <p
