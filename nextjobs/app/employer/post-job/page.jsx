@@ -70,9 +70,10 @@ export default function PostJobsForm() {
 
     try {
       const res = await API.post("/employer/post-job", form);
-      setMessage(res.data.message);
 
       if (res.status === 201) {
+        setMessage("✅ Job posted successfully! Redirecting...");
+
         setForm({
           title: "",
           description: "",
@@ -82,7 +83,12 @@ export default function PostJobsForm() {
           category: "",
           requirements: "",
         });
-        router.push("/employer/job-list");
+
+        setTimeout(() => {
+          router.push("/employer/job-list");
+        }, 2000);
+      } else {
+        setMessage(res.data.message || "❌ Something went wrong.");
       }
     } catch (error) {
       setMessage(
@@ -98,8 +104,8 @@ export default function PostJobsForm() {
       {message && (
         <p
           className={`mb-4 text-center p-2 rounded ${message.startsWith("✅")
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
             }`}
         >
           {message}
