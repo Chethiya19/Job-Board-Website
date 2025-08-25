@@ -19,7 +19,7 @@ NextJobs is a full-stack **Next.js** job board application where job seekers can
 - Manage company profile
 
 ### General
-- Role-based access control (job seeker / employer)
+- Role-based access control (candidate / employer)
 - Dynamic job listing pages
 - Notifications for actions (success/error)
 
