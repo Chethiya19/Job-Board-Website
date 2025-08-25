@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "Candidate" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "" });
   const [message, setMessage] = useState("");
   const router = useRouter();
 
@@ -82,13 +82,15 @@ export default function Register() {
 
           {/* Role */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Select Role</label>
+            <label className="form-label fw-semibold">Role</label>
             <select
               className="form-select rounded-3"
               name="role"
               value={form.role}
               onChange={handleChange}
+              required
             >
+              <option value="" disabled>--Select Role--</option>
               <option value="Candidate">Candidate</option>
               <option value="Employer">Employer</option>
             </select>

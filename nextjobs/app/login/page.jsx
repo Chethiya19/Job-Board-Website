@@ -32,6 +32,9 @@ export default function Login() {
           } else if (data.user.role === "Employer") {
             router.push("/employer/dashboard");
           }
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         }, 1500);
       } else {
         setMessage(`❌ ${data.message}`);

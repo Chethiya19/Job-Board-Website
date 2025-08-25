@@ -39,7 +39,7 @@ const categories = [
 
 export default function UpdateJob() {
   const router = useRouter();
-  const { id } = useParams(); // Get the job ID from URL
+  const { id } = useParams();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -51,7 +51,6 @@ export default function UpdateJob() {
   });
   const [message, setMessage] = useState("");
 
-  // Fetch job details
   useEffect(() => {
     if (!id) return;
 
@@ -78,6 +77,7 @@ export default function UpdateJob() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setMessage("");
   };
 
   const handleSubmit = async (e) => {
@@ -89,7 +89,7 @@ export default function UpdateJob() {
 
     try {
       await API.put(`/employer/update-job/${id}`, { id, ...form });
-      setMessage("✅ Job updated successfully!");
+      setMessage("✅ Job updated successfully! Redirecting...");
       setTimeout(() => router.push("/employer/manage-jobs"), 2000);
     } catch (err) {
       console.error(err);
@@ -98,91 +98,123 @@ export default function UpdateJob() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-2 text-center">Update Job</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-3xl font-bold mb-6 text-center">Update Job</h2>
 
       {message && (
         <p
-          className={`mb-4 text-center p-2 rounded ${message.startsWith("✅")
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-700"
-            }`}
+          className={`mb-4 text-center p-2 rounded ${
+            message.startsWith("✅")
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
         >
           {message}
         </p>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Job Title *"
-          value={form.title}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2 mb-3"
-        />
-        <textarea
-          name="description"
-          placeholder="Job Description *"
-          value={form.description}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2 mb-3"
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Job Title */}
+        <div>
+          <label className="block font-semibold mb-1">Job Title</label>
           <input
             type="text"
-            name="location"
-            placeholder="Location *"
-            value={form.location}
+            name="title"
+            value={form.title}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
+            placeholder="Enter job title"
           />
-          <input
-            type="text"
-            name="salary"
-            placeholder="Salary"
-            value={form.salary}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-          <select
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2 bg-white"
-          >
-            <option value="" disabled>Select Job Type *</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Internship">Internship</option>
-            <option value="Contract">Contract</option>
-          </select>
         </div>
 
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2 mb-3 bg-white"
-        >
-          <option value="" disabled>Select Job Category *</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        {/* Description + Requirements */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1">Job Description</label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter job description"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Requirements</label>
+            <textarea
+              name="requirements"
+              value={form.requirements}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter requirements (optional)"
+            />
+          </div>
+        </div>
 
-        <textarea
-          name="requirements"
-          placeholder="Requirements (Optional)"
-          value={form.requirements}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2 mb-3"
-        />
+        {/* Location + Salary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter location"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Salary</label>
+            <input
+              type="text"
+              name="salary"
+              value={form.salary}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter salary"
+            />
+          </div>
+        </div>
+
+        {/* Job Type + Category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1">Job Type</label>
+            <select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 bg-white"
+            >
+              <option value="" disabled>Select Job Type</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Internship">Internship</option>
+              <option value="Contract">Contract</option>
+            </select>
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Job Category</label>
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 bg-white"
+            >
+              <option value="" disabled>Select Job Category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-semibold"
         >
           Update Job
         </button>

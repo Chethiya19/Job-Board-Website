@@ -42,7 +42,7 @@ export default function EmployerSidebar() {
   };
 
   return (
-    <div style={{ width: "16rem", height: "80vh", backgroundColor: "#1d4ed8", color: "white", display: "flex", flexDirection: "column" }}>
+    <div style={{ width: "16rem", height: "85vh", backgroundColor: "#1d4ed8", color: "white", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "1.5rem", fontSize: "1.5rem", fontWeight: "bold", borderBottom: "2px solid #2563eb" }}>
         Employer
       </div>
