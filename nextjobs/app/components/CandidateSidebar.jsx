@@ -45,7 +45,7 @@ export default function CandidateSidebar() {
   const styles = {
     sidebar: {
       width: "16rem",
-      height: "80vh",
+      height: "85vh",
       backgroundColor: "#1d4ed8", // blue-700
       color: "white",
       display: "flex",
@@ -94,25 +94,27 @@ export default function CandidateSidebar() {
       <div style={styles.header}>Candidate</div>
       <nav style={styles.nav}>
         <ul style={styles.ul}>
-          {menuItems.map((item) => (
-            <li
-              key={item.path}
-              style={{
-                ...styles.li,
-                ...(pathname === item.path ? styles.activeLi : {}),
-              }}
-              onClick={() => handleNavigation(item.path)}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#2563eb")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  pathname === item.path ? "#3b82f6" : "transparent")
-              }
-            >
-              {item.name}
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = pathname === item.path;
+            return (
+              <li
+                key={item.path}
+                style={{
+                  ...styles.li,
+                  ...(isActive ? { backgroundColor: "#3b82f6" } : {}),
+                }}
+                onClick={() => handleNavigation(item.path)}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = "#1e40af"; // blue-800
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = isActive ? "#3b82f6" : "transparent";
+                }}
+              >
+                {item.name}
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <button

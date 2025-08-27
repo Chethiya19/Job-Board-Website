@@ -57,7 +57,7 @@ export default function EmployerSidebar() {
               <li
                 key={item.name}
                 className={`px-4 py-2 rounded font-medium cursor-pointer ${
-                  isActive ? "bg-blue-500" : "hover:bg-blue-600"
+                  isActive ? "bg-blue-500" : "hover:bg-blue-800"
                 }`}
                 onClick={() => handleNavigation(item.paths[0])}
               >
