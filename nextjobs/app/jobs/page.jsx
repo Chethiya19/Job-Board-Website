@@ -69,13 +69,13 @@ export default function ViewAllJobs() {
       {jobs.length === 0 ? (
         <p>No jobs available.</p>
       ) : (
-        <div className="h-[500px] overflow-y-auto pr-2">
+        <div className="h-[500px] overflow-y-auto pl-1 pr-2">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {jobs.map((job) => (
               <div
                 key={job._id}
                 onClick={() => router.push(`/jobs/${slugify(job.title)}`)}
-                className="relative border p-4 rounded-md shadow hover:shadow-lg transition cursor-pointer bg-white text-sm"
+                className="relative border p-4 rounded-md shadow hover:shadow-lg hover:scale-102 hover:bg-gray-50 transition-transform duration-300 cursor-pointer bg-white text-sm"
               >
                 <h6 className="text-lg font-semibold mb-2">{job.title}</h6>
 
