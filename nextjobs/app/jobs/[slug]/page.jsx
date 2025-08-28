@@ -10,6 +10,8 @@ export default function JobDetails() {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [applying, setApplying] = useState(false);
+    const [applyMessage, setApplyMessage] = useState("");
 
     const slugify = (text) =>
         text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -43,6 +45,20 @@ export default function JobDetails() {
 
         fetchJob();
     }, [slug]);
+
+    const handleApply = async () => {
+        setApplying(true);
+        setApplyMessage("");
+        try {
+            const res = await API.post("/candidate/apply", { jobId: job._id });
+            setApplyMessage(res.data.message);
+        } catch (err) {
+            console.error(err);
+            setApplyMessage(err.response?.data?.message || "Failed to apply");
+        } finally {
+            setApplying(false);
+        }
+    };
 
     if (loading)
         return (
@@ -94,13 +110,20 @@ export default function JobDetails() {
             </div>
 
             {/* Apply Button */}
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
                 <button
-                    onClick={() => alert("Apply functionality coming soon!")}
-                    className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow hover:bg-blue-700 transition"
+                    onClick={handleApply}
+                    disabled={applying}
+                    className={`px-6 py-3 font-semibold rounded-full shadow transition ${applying
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
                 >
-                    Apply Now
+                    {applying ? "Applying..." : "Apply Now"}
                 </button>
+                {applyMessage && (
+                    <p className="mt-3 text-sm text-gray-600">{applyMessage}</p>
+                )}
             </div>
         </div>
     );

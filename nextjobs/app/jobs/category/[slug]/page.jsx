@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import API from "@/lib/axios"; // Axios instance to fetch jobs
+import API from "@/lib/axios";
 
 export default function CategoryJobsPage() {
   const { slug } = useParams();
@@ -12,7 +12,7 @@ export default function CategoryJobsPage() {
     async function fetchJobs() {
       setLoading(true);
       try {
-        const res = await API.get(`/jobs?category=${slug}`); // Backend filter
+        const res = await API.get(`/jobs?category=${slug}`);
         setJobs(res.data);
       } catch (err) {
         console.error(err);
