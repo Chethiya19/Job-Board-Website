@@ -43,4 +43,5 @@ NextJobs is a full-stack **Next.js** job board application where job seekers can
 
 <img width="1348" height="603" alt="image" src="https://github.com/user-attachments/assets/1dab1bca-814d-4a4d-a96f-c99796d42d18" />
 
+<img width="1347" height="599" alt="image" src="https://github.com/user-attachments/assets/19e8a62d-c0b7-4e7b-8a3f-b50155b425f6" />
 
